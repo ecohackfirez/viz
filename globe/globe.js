@@ -21,7 +21,11 @@ DAT.Globe = function(container, colorFn) {
     var c = new THREE.Color();
     
     // c.setHSV( ( .54,(intensity)/(1.0 * MAX_INTENSITY),  intensity/(1.0 * MAX_INTENSITY));
-    c.setHSV(.06, .9, 1.0);
+    // red = 0; yellow = 0.16
+    var h = 0.16 * (intensity)/(1.0 * MAX_INTENSITY);
+    var s = 1.0;
+    var v = 0.5 + intensity/MAX_INTENSITY;
+    c.setHSV(h, s, v);
     return c;
   };
 
@@ -224,8 +228,9 @@ DAT.Globe = function(container, colorFn) {
       lat = data[i];
       lng = data[i + 1];
       color = colorFnWrapper(data,i);
+      // Size should be related to number of fires
       size = data[i + 2];
-      size = size*200;
+      // size = size*200;
       addPoint(lat, lng, size, color, subgeo);
     }
     if (opts.animated) {
