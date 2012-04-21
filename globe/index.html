@@ -110,16 +110,11 @@
   </div>
 
   <div id="currentInfo">
-    <span id="year2012" class="year">2012</span>
   </div>
 
   <div id="title">
-    World Population
+    Da Firez
   </div>
-
-  <a id="ce" href="http://www.chromeexperiments.com/globe">
-    <span>This is a Chrome Experiment</span>
-  </a>
 
   <script type="text/javascript" src="/globe/third-party/Three/ThreeWebGL.js"></script>
   <script type="text/javascript" src="/globe/third-party/Three/ThreeExtras.js"></script>
@@ -127,13 +122,14 @@
   <script type="text/javascript" src="/globe/third-party/Three/Detector.js"></script>
   <script type="text/javascript" src="/globe/third-party/Tween.js"></script>
   <script type="text/javascript" src="/globe/globe.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
   <script type="text/javascript">
 
     if(!Detector.webgl){
       Detector.addGetWebGLMessage();
     } else {
 
-      var years = ['2012'];
+      var years = [];
       var container = document.getElementById('container');
       var globe = new DAT.Globe(container);
       console.log(globe);
@@ -164,16 +160,21 @@
 
 
       xhr = new XMLHttpRequest();
-      // xhr.open('GET', 'http://ecohackfirez.appspot.com/api/webgl?count=3', true);
-      xhr.open('GET', '/globe/flatfires.json', true);
+      xhr.open('GET', 'http://ecohackfirez.appspot.com/api/webgl?count=1', true);
+      // xhr.open('GET', '/globe/fires.json', true);
       
       xhr.onreadystatechange = function(e) {
         if (xhr.readyState === 4) {
           if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
             window.data = data;
+            // data is [{"date":"yyyymmdd", "values": [lat, lon, mag, count]}, {}]
             for (i=0;i<data.length;i++) {
-              globe.addData(data[i][1], {format: 'magnitude', name: data[i][0], animated: true});
+              globe.addData(data[i]["values"], {format: 'magnitude', name: data[i]["date"], animated: true});
+              years.push(data[i]["date"]);
+              // Create the span
+              $("<span id=\"year\"" + data[i]["date"] + " class=\"year\">" + data[i]["date"] + "</span>").appendTo("#currentInfo");
+              
             }
             globe.createPoints();
             settime(globe,0)();
