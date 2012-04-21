@@ -122,7 +122,8 @@
   <script type="text/javascript" src="/globe/third-party/Three/Detector.js"></script>
   <script type="text/javascript" src="/globe/third-party/Tween.js"></script>
   <script type="text/javascript" src="/globe/globe.js"></script>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="/globe/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="/globe/underscore-min.js"></script>
   <script type="text/javascript">
 
 
@@ -152,7 +153,7 @@
       var bind_mouseover = function(yearname, yearIndex, globe) {
         $('#year'+yearname).mouseover(function() { 
             console.log("mouseover here " + yearIndex + "(" + yearname + ")"); 
-            settime(globe, yearIndex);
+            // settime(globe, yearIndex);
             //globe.createPoints();
         	settime(globe,yearIndex)();
        		globe.animate(); 
@@ -165,23 +166,28 @@
       var load_data = function(data) {
         window.data = data;
         // data is [{"date":"yyyymmdd", "values": [lat, lon, mag, count]}, {}]
+        var points = Array();
         var currentInfo = $("#currentInfo");
-        var yearname = "";
+        var yearname = "blah";
         for (i=0;i<data.length;i++) {
-            yearname = data[i]["date"].replace(/\//g, '');
-            globe.addData(data[i]["values"], {format: 'magnitude', name: yearname, animated: true});
-            years.push(yearname);
-            // Create the span
-            currentInfo.append("<span id=\"year" + yearname + "\" class=\"year\">" + data[i]["date"] + "</span>");     
-            bind_mouseover(yearname, i, globe);
+            // yearname = data[i]["date"].replace(/\//g, '');
+            points.push(data[i]["count"]);
         }
+        points = _.flatten(points)
+        globe.addData(points, {format: 'magnitude', name: yearname, animated: true});
+        years.push(yearname);
+        // Create the span
+        currentInfo.append("<span id=\"year" + yearname + "\" class=\"year\">" + yearname + "</span>");     
+        bind_mouseover(yearname, 0, globe);
+
         globe.createPoints();
         settime(globe,0)();
         globe.animate();
       }
       
       $.getJSON(
-          "fires.json",
+          // "fires.json",
+          "http://ecohackfirez.appspot.com/api/webgl?count=10&start_date=2012-04-17&end_date=2012-04-20",
           load_data
       );
       

@@ -13,7 +13,7 @@
 
 var DAT = DAT || {};
 
-var MAX_INTENSITY = 500;
+var MAX_INTENSITY = 2;
 
 DAT.Globe = function(container, colorFn) {
 
@@ -231,7 +231,7 @@ DAT.Globe = function(container, colorFn) {
       color = colorFnWrapper(data,i);
       // Size should be related to number of fires
       size = data[i + 2];
-      // size = size*200;
+      size = size*3;
       addPoint(lat, lng, size, color, subgeo);
     }
     if (opts.animated) {
