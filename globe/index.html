@@ -125,10 +125,10 @@
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
   <script type="text/javascript">
 
+
     if(!Detector.webgl){
       Detector.addGetWebGLMessage();
     } else {
-
       var years = [];
       var container = document.getElementById('container');
       var globe = new DAT.Globe(container);
@@ -137,52 +137,52 @@
 
       var settime = function(globe, t) {
         return function() {
-          new TWEEN.Tween(globe).to({time: t/years.length},500).easing(TWEEN.Easing.Cubic.EaseOut).start();
-          var y = document.getElementById('year'+years[t]);
-          if (y.getAttribute('class') === 'year active') {
-            return;
-          }
-          var yy = document.getElementsByClassName('year');
-          for(i=0; i<yy.length; i++) {
-            yy[i].setAttribute('class','year');
-          }
-          y.setAttribute('class', 'year active');
+            new TWEEN.Tween(globe).to({time: t/years.length},500).easing(TWEEN.Easing.Cubic.EaseOut).start();
+            if ($("#year" + years[t]).hasClass("active")) {
+                return;
+            }
+            $(".year").each(function() {
+                $(this).removeClass('active');
+            });
+            $("#year" + years[t]).addClass('active');
+            console.log(window.data);
         };
       };
 
-      for(var i = 0; i<years.length; i++) {
-        var y = document.getElementById('year'+years[i]);
-        y.addEventListener('mouseover', settime(globe,i), false);
+      var bind_mouseover = function(yearname, yearnum, globe) {
+        $('#year'+yearname).mouseover(function() { 
+            console.log("mouseover here " + yearnum + "(" + yearname + ")"); 
+            settime(globe, yearnum);
+            globe.animate(); 
+        });
       }
 
       var xhr;
       TWEEN.start();
 
-
-      xhr = new XMLHttpRequest();
-      xhr.open('GET', 'http://ecohackfirez.appspot.com/api/webgl?count=1', true);
-      // xhr.open('GET', '/globe/fires.json', true);
-      
-      xhr.onreadystatechange = function(e) {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
-            window.data = data;
-            // data is [{"date":"yyyymmdd", "values": [lat, lon, mag, count]}, {}]
-            for (i=0;i<data.length;i++) {
-              globe.addData(data[i]["values"], {format: 'magnitude', name: data[i]["date"], animated: true});
-              years.push(data[i]["date"]);
-              // Create the span
-              $("<span id=\"year\"" + data[i]["date"] + " class=\"year\">" + data[i]["date"] + "</span>").appendTo("#currentInfo");
-              
-            }
-            globe.createPoints();
-            settime(globe,0)();
-            globe.animate();
-          }
+      var load_data = function(data) {
+        window.data = data;
+        // data is [{"date":"yyyymmdd", "values": [lat, lon, mag, count]}, {}]
+        var currentInfo = $("#currentInfo");
+        var yearname = "";
+        for (i=0;i<data.length;i++) {
+            yearname = data[i]["date"].replace(/\//g, '');
+            globe.addData(data[i]["values"], {format: 'magnitude', name: yearname, animated: true});
+            years.push(yearname);
+            // Create the span
+            currentInfo.append("<span id=\"year" + yearname + "\" class=\"year\">" + data[i]["date"] + "</span>");     
+            bind_mouseover(yearname, i, globe);
         }
-      };
-      xhr.send(null);
+        globe.createPoints();
+        settime(globe,0)();
+        globe.animate();
+      }
+      
+      $.getJSON(
+          "/globe/fires.json",
+          load_data
+      );
+      
     }
 
   </script>
