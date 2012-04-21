@@ -1,0 +1,14 @@
+application: map-of-life
+version: webgl
+runtime: python27
+threadsafe: true
+api_version: 1
+
+
+handlers:
+
+- url: /globe
+  static_dir: globe
+
+- url: /Three
+  static_dir: Three
