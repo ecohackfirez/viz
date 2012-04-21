@@ -149,11 +149,13 @@
         };
       };
 
-      var bind_mouseover = function(yearname, yearnum, globe) {
+      var bind_mouseover = function(yearname, yearIndex, globe) {
         $('#year'+yearname).mouseover(function() { 
-            console.log("mouseover here " + yearnum + "(" + yearname + ")"); 
-            settime(globe, yearnum);
-            globe.animate(); 
+            console.log("mouseover here " + yearIndex + "(" + yearname + ")"); 
+            settime(globe, yearIndex);
+            //globe.createPoints();
+        	settime(globe,yearIndex)();
+       		globe.animate(); 
         });
       }
 
@@ -179,7 +181,7 @@
       }
       
       $.getJSON(
-          "/globe/fires.json",
+          "fires.json",
           load_data
       );
       
